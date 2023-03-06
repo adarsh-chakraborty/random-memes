@@ -38,12 +38,11 @@ const fromReddit = async function (subredditname, groupId = '1234@g.us') {
   let finalMeme;
   let attempts = 0;
 
+  const identifier = `R${groupId}_${subredditname}K`.toLowerCase();
+
   while (!finalMeme && attempts < memeObject.data.children.length) {
     let tempPost = await memeObject.data.children[
-      generateRandomNumber(
-        `R${groupId}_${subredditname}K`,
-        memeObject.data.children.length
-      )
+      generateRandomNumber(identifier, memeObject.data.children.length)
     ];
 
     const url = tempPost.data.url;
