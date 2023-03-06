@@ -1,7 +1,33 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 
-var fromReddit = async function (subredditname) {
+function createRandomNumberGenerator() {
+  let previousNumbers = {};
+
+  function generateRandomNumber(identifier, max) {
+    let min = 0;
+
+    if (!previousNumbers[identifier]) {
+      previousNumbers[identifier] = [];
+    }
+
+    if (previousNumbers[identifier].length === max) {
+      previousNumbers[identifier] = [];
+    }
+    let randomNumber;
+    do {
+      randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    } while (previousNumbers[identifier].includes(randomNumber));
+    previousNumbers[identifier].push(randomNumber);
+    return randomNumber;
+  }
+
+  return generateRandomNumber;
+}
+
+const generateRandomNumber = createRandomNumberGenerator();
+
+const fromReddit = async function (subredditname) {
   let response = await fetch(
     'https://www.reddit.com/r/' + subredditname + '/hot/.json?count=100'
   );
@@ -12,7 +38,7 @@ var fromReddit = async function (subredditname) {
 
   while (!finalMeme && attempts < memeObject.data.children.length) {
     let tempPost = await memeObject.data.children[
-      Math.floor(Math.random() * memeObject.data.children.length)
+      generateRandomNumber(subredditname, memeObject.data.children.length)
     ];
 
     const url = tempPost.data.url;
