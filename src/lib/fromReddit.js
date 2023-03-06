@@ -13,12 +13,14 @@ function createRandomNumberGenerator() {
 
     if (previousNumbers[identifier].length === max) {
       previousNumbers[identifier] = [];
+      console.log('Flushed previous numbers for identifier:' + identifier);
     }
     let randomNumber;
     do {
       randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
     } while (previousNumbers[identifier].includes(randomNumber));
     previousNumbers[identifier].push(randomNumber);
+    console.log(previousNumbers);
     return randomNumber;
   }
 
@@ -27,7 +29,7 @@ function createRandomNumberGenerator() {
 
 const generateRandomNumber = createRandomNumberGenerator();
 
-const fromReddit = async function (subredditname) {
+const fromReddit = async function (subredditname, groupId = '1234@g.us') {
   let response = await fetch(
     'https://www.reddit.com/r/' + subredditname + '/hot/.json?count=100'
   );
@@ -38,7 +40,10 @@ const fromReddit = async function (subredditname) {
 
   while (!finalMeme && attempts < memeObject.data.children.length) {
     let tempPost = await memeObject.data.children[
-      generateRandomNumber(subredditname, memeObject.data.children.length)
+      generateRandomNumber(
+        `R${groupId}_${subredditname}K`,
+        memeObject.data.children.length
+      )
     ];
 
     const url = tempPost.data.url;
